@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xms_app/src/authentication/bloc/authentication_bloc.dart';
+import 'package:xms_app/src/authentication/views/screens/authentication_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,13 +13,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'XMS',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Placeholder(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => AuthenticationBloc(),),
+        ],
+        child: const AuthenticationScreen(),
+      ),
     );
   }
 }
-
