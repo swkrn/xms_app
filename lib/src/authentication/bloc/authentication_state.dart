@@ -6,7 +6,7 @@ sealed class AuthenticationState {}
 final class AuthenticationInitial extends AuthenticationState {}
 
 
-final class AuthenticationLoggingIn extends AuthenticationState {}
+final class AuthenticationLoading extends AuthenticationState {}
 
 final class AuthenticationLoginFailed extends AuthenticationState {
   AuthenticationLoginFailed({
@@ -17,8 +17,6 @@ final class AuthenticationLoginFailed extends AuthenticationState {
 
 final class AuthenticationLoginSuccess extends AuthenticationState {}
 
-
-final class AuthenticationRegistering extends AuthenticationState {}
 
 final class AuthenticationRegisterFailed extends AuthenticationState {
   AuthenticationRegisterFailed({

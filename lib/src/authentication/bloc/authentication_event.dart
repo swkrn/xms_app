@@ -22,3 +22,5 @@ final class AuthenticationRegister extends AuthenticationEvent {
   final String username;
   final String password;
 }
+
+final class AuthenticationCheckToken extends AuthenticationEvent {}

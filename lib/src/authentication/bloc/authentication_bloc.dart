@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xms_app/utils/const_value.dart';
 import 'package:xms_app/utils/exceptions.dart';
 
@@ -15,16 +16,15 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
     on<AuthenticationLogin>(_loginHandler);
     on<AuthenticationRegister>(_registerHandler);
+    on<AuthenticationCheckToken>(_checkTokenHandler);
   }
-
-
 
   FutureOr<void> _loginHandler(
     AuthenticationLogin event, 
     Emitter<AuthenticationState> emit
   ) async {
     try {
-      emit(AuthenticationLoggingIn());
+      emit(AuthenticationLoading());
 
       final username = event.username;
       final password = event.password;
@@ -47,6 +47,10 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
           statusCode: response.statusCode
         );
       }
+
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', jsonDecode(response.body)['token']);
+
       emit(AuthenticationLoginSuccess());
     }
     on APIException catch (exception) {
@@ -59,7 +63,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     Emitter<AuthenticationState> emit,
   ) async {
     try {
-      emit(AuthenticationRegistering());
+      emit(AuthenticationLoading());
 
       final username = event.username;
       final password = event.password;
@@ -88,5 +92,42 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     on APIException catch (exception) {
       emit(AuthenticationRegisterFailed(message: exception.errorMessage));
     }
+  }
+
+  FutureOr<void> _checkTokenHandler(
+    AuthenticationCheckToken event, 
+    Emitter<AuthenticationState> emit
+  ) async {
+    try {
+      emit(AuthenticationLoading());
+      
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      String? token = prefs.getString('token');
+      if (token == null) {
+        emit(AuthenticationLoginFailed(message: 'No token'));
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('$kBaseUrl/auth/is-valid-token'),
+        headers: {
+          'x-auth-token': token,
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw APIException(
+          message: jsonDecode(response.body)['msg'], 
+          statusCode: response.statusCode,
+        );
+      }
+
+      emit(AuthenticationLoginSuccess());
+    }
+    on APIException catch (exception) {
+      emit(AuthenticationLoginFailed(message: exception.errorMessage));
+    }
+    
   }
 }

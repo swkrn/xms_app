@@ -21,6 +21,16 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    checkTokenHandler();
+  }
+
+  void checkTokenHandler() {
+    context.read<AuthenticationBloc>().add(AuthenticationCheckToken());
+  }
+
   void loginHandler() {
     context.read<AuthenticationBloc>().add(AuthenticationLogin(
       username: _usernameController.text.trim(), 
@@ -54,7 +64,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             )
           );
         }
-        else if (state is AuthenticationRegisterFailed) {
+        if (state is AuthenticationLoginSuccess) {
+          Navigator.of(context).popAndPushNamed('/messages-list');
+        }
+        if (state is AuthenticationRegisterFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -62,7 +75,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             ),
           );
         }
-        else if (state is AuthenticationRegisterSuccess) {
+        if (state is AuthenticationRegisterSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Successfully created account, now you can login'),
@@ -75,57 +88,59 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('XMS'),
-          ),
-          body: SafeArea(
-            child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    ListTile(
-                      title: const Text('Login'),
-                      leading: Radio<AuthenticationRadioState>(
-                          value: AuthenticationRadioState.login,
-                          groupValue: _radioState,
-                          onChanged: (AuthenticationRadioState? value) {
-                            setState(() {
-                              _radioState = value;
-                            });
-                          }),
-                    ),
-                    _radioState == AuthenticationRadioState.login
-                        ? LoginSection(
-                            usernameController: _usernameController,
-                            passwordController: _passwordController,
-                            onLogin: loginHandler,
-                          )
-                        : const SizedBox(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ListTile(
-                      title: const Text('Register'),
-                      leading: Radio<AuthenticationRadioState>(
-                          value: AuthenticationRadioState.register,
-                          groupValue: _radioState,
-                          onChanged: (AuthenticationRadioState? value) {
-                            setState(() {
-                              _radioState = value;
-                            });
-                          }),
-                    ),
-                    _radioState == AuthenticationRadioState.register
-                        ? RegisterSection(
-                            usernameController: _usernameController,
-                            passwordController: _passwordController,
-                            onRegister: registerHandler,
-                          )
-                        : const SizedBox(),
-                  ],
-                )),
-          ),
-        );
+            appBar: AppBar(
+              title: const Text('XMS'),
+            ),
+            body: (state is AuthenticationLoading)
+              ? const Center(child: CircularProgressIndicator(),)
+              : SafeArea(
+                child: Container(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        ListTile(
+                          title: const Text('Login'),
+                          leading: Radio<AuthenticationRadioState>(
+                              value: AuthenticationRadioState.login,
+                              groupValue: _radioState,
+                              onChanged: (AuthenticationRadioState? value) {
+                                setState(() {
+                                  _radioState = value;
+                                });
+                              }),
+                        ),
+                        _radioState == AuthenticationRadioState.login
+                            ? LoginSection(
+                                usernameController: _usernameController,
+                                passwordController: _passwordController,
+                                onLogin: loginHandler,
+                              )
+                            : const SizedBox(),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ListTile(
+                          title: const Text('Register'),
+                          leading: Radio<AuthenticationRadioState>(
+                              value: AuthenticationRadioState.register,
+                              groupValue: _radioState,
+                              onChanged: (AuthenticationRadioState? value) {
+                                setState(() {
+                                  _radioState = value;
+                                });
+                              }),
+                        ),
+                        _radioState == AuthenticationRadioState.register
+                            ? RegisterSection(
+                                usernameController: _usernameController,
+                                passwordController: _passwordController,
+                                onRegister: registerHandler,
+                              )
+                            : const SizedBox(),
+                      ],
+                    )),
+              ),
+          );
       },
     );
   }
