@@ -16,9 +16,9 @@ final class MessagesListLoadSuccess extends MessagesListState {
 
 final class MessagesListLoadFailed extends MessagesListState {
   MessagesListLoadFailed({
-    required this.message,
+    required this.errorMessage,
   });
-  final String message;
+  final String errorMessage;
 }
 
 final class MessagesListNotAuthenticated extends MessagesListState {}

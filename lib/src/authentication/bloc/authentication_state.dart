@@ -10,19 +10,27 @@ final class AuthenticationLoading extends AuthenticationState {}
 
 final class AuthenticationLoginFailed extends AuthenticationState {
   AuthenticationLoginFailed({
-    required this.message,
+    required this.errorMessage,
   });
-  final String message;
+  final String errorMessage;
 }
 
-final class AuthenticationLoginSuccess extends AuthenticationState {}
+final class AuthenticationLoginSuccess extends AuthenticationState {
+  AuthenticationLoginSuccess({
+    required this.id,
+    required this.username,
+  });
+
+  final String id;
+  final String username;
+}
 
 
 final class AuthenticationRegisterFailed extends AuthenticationState {
   AuthenticationRegisterFailed({
-    required this.message,
+    required this.errorMessage,
   });
-  final String message;
+  final String errorMessage;
 }
 
 final class AuthenticationRegisterSuccess extends AuthenticationState {}

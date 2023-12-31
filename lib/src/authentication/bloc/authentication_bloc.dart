@@ -51,10 +51,18 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', jsonDecode(response.body)['token']);
 
-      emit(AuthenticationLoginSuccess());
+      String id = jsonDecode(response.body)['id'];
+
+      emit(AuthenticationLoginSuccess(
+        id: id,
+        username: username,
+      ));
     }
     on APIException catch (exception) {
-      emit(AuthenticationLoginFailed(message: exception.errorMessage));
+      emit(AuthenticationLoginFailed(errorMessage: exception.errorMessage));
+    }
+    catch (err) {
+      emit(AuthenticationLoginFailed(errorMessage: err.toString()));
     }
   }
 
@@ -90,7 +98,10 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       emit(AuthenticationRegisterSuccess());
     }
     on APIException catch (exception) {
-      emit(AuthenticationRegisterFailed(message: exception.errorMessage));
+      emit(AuthenticationRegisterFailed(errorMessage: exception.errorMessage));
+    }
+    catch (err) {
+      emit(AuthenticationLoginFailed(errorMessage: err.toString()));
     }
   }
 
@@ -105,7 +116,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
       String? token = prefs.getString('token');
       if (token == null) {
-        emit(AuthenticationLoginFailed(message: 'No token'));
+        emit(AuthenticationLoginFailed(errorMessage: 'No token'));
         return;
       }
 
@@ -123,11 +134,19 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
         );
       }
 
-      emit(AuthenticationLoginSuccess());
+      String id = jsonDecode(response.body)['id'];
+      String username = jsonDecode(response.body)['username'];
+
+      emit(AuthenticationLoginSuccess(
+        id: id,
+        username: username,
+      ));
     }
     on APIException catch (exception) {
-      emit(AuthenticationLoginFailed(message: exception.errorMessage));
+      emit(AuthenticationLoginFailed(errorMessage: exception.errorMessage));
     }
-    
+    catch (err) {
+      emit(AuthenticationLoginFailed(errorMessage: err.toString()));
+    }
   }
 }

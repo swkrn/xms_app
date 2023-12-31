@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xms_app/src/message/models/message_pair.dart';
+import 'package:xms_app/src/message/models/message_pair_model.dart';
 import 'package:xms_app/utils/const_value.dart';
 import 'package:xms_app/utils/exceptions.dart';
 import 'package:http/http.dart' as http;
@@ -45,7 +45,6 @@ class MessagesListBloc extends Bloc<MessagesListEvent, MessagesListState> {
         );
       }
 
-      print(jsonDecode(result.body));
       final messagePairs = 
         List<Map<String, dynamic>>.from(jsonDecode(result.body))
         .map((element) => MessagePair.fromMap(element),)
@@ -55,8 +54,11 @@ class MessagesListBloc extends Bloc<MessagesListEvent, MessagesListState> {
     }
     on APIException catch (exception) {
       emit(MessagesListLoadFailed(
-        message: exception.errorMessage,
+        errorMessage: exception.errorMessage,
       ));
+    }
+    catch (err) {
+      emit(MessagesListLoadFailed(errorMessage: err.toString()));
     }
   }
 }

@@ -56,23 +56,15 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
-        if (state is AuthenticationLoginFailed) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            )
-          );
-        }
         if (state is AuthenticationLoginSuccess) {
           Navigator.of(context).popAndPushNamed('/messages-list');
         }
-        if (state is AuthenticationRegisterFailed) {
+        if (state is AuthenticationLoginFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.errorMessage),
               backgroundColor: Colors.red,
-            ),
+            )
           );
         }
         if (state is AuthenticationRegisterSuccess) {
@@ -85,6 +77,14 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             _radioState = AuthenticationRadioState.login;
           });
         }
+        if (state is AuthenticationRegisterFailed) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }   
       },
       builder: (context, state) {
         return Scaffold(

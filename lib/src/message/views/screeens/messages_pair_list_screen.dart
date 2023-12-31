@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xms_app/src/message/bloc/messages_list_bloc.dart';
-import 'package:xms_app/src/message/views/widgets/messages_list.dart';
+import 'package:xms_app/src/message/views/widgets/messages_pair_list.dart';
 
-class MessagesListScreen extends StatefulWidget {
-  const MessagesListScreen({super.key});
+class MessagesPairListScreen extends StatefulWidget {
+  const MessagesPairListScreen({super.key});
 
   @override
-  State<MessagesListScreen> createState() => _MessagesListScreenState();
+  State<MessagesPairListScreen> createState() => _MessagesPairListScreenState();
 }
 
-class _MessagesListScreenState extends State<MessagesListScreen> {
+class _MessagesPairListScreenState extends State<MessagesPairListScreen> {
 
   @override
   void initState() {
@@ -32,7 +32,7 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
         if (state is MessagesListLoadFailed) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.errorMessage),
               backgroundColor: Colors.red,
             ),
           );
@@ -41,11 +41,16 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(title: const Text('Messages'),),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {}, 
+            icon: const Icon(Icons.send),
+            label: const Text('Write a message')
+          ),
           body: 
           (state is MessagesListLoading)
             ? const Center(child: CircularProgressIndicator(),)
-            : (state is MessagesListLoadSuccess)
-              ? MessagesList(messagePairs: state.messagePairs)
+            : (state is MessagesListLoadSuccess)             
+              ? MessagesPairList(messagePairs: state.messagePairs, context: context,)
               : const SizedBox(),
         );
       },
