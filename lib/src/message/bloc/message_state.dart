@@ -25,3 +25,12 @@ final class MessageGetSuccess extends MessageState {
   final User user;
   final User withUser;
 }
+
+final class MessageSendFailed extends MessageState {
+  MessageSendFailed({
+    required this.errorMessage,
+  });
+  final String errorMessage;
+}
+
+final class MessageSendSuccess extends MessageState {}

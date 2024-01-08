@@ -8,3 +8,13 @@ final class MessageGetMessages extends MessageEvent {
 
   MessageGetMessages({required this.withUser});
 }
+
+final class MessageSendMessage extends MessageEvent {
+  final String textMessage;
+  final User withUser;
+
+  MessageSendMessage({
+    required this.textMessage,
+    required this.withUser,
+  });
+}

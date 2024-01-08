@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xms_app/src/message/models/message_pair_model.dart';
+import 'package:xms_app/src/message/sockets/message_socket.dart';
 import 'package:xms_app/utils/const_value.dart';
 import 'package:xms_app/utils/exceptions.dart';
 import 'package:http/http.dart' as http;
@@ -44,6 +45,9 @@ class MessagesListBloc extends Bloc<MessagesListEvent, MessagesListState> {
           statusCode: result.statusCode,
         );
       }
+
+      final messageSocket = MessageSocket();
+      messageSocket.joinMessages(token);
 
       final messagePairs = 
         List<Map<String, dynamic>>.from(jsonDecode(result.body))

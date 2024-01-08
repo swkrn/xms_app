@@ -37,7 +37,12 @@ class MessagesPairList extends StatelessWidget {
               ),
             ),
             subtitle: Text(messagePair.lastMessage),
-            trailing: Text(DateFormat('hh:mm — yyyy-MM-dd ').format(messagePair.lastTime)),
+            trailing: Text(
+              DateFormat('yyyy-MM-dd — hh:mm').format(messagePair.lastTime),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+              ),
+            ),
             onTap: () {
               navigateToMessage(messagePair.pairUser.id, messagePair.pairUser.username);
             },
